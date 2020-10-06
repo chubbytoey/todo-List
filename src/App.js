@@ -1,19 +1,17 @@
-import React, { useState } from "react";
+import React from "react";
 import Title from "./components/Title";
 import Input from "./components/Input";
 import Lane from "./components/Lane";
+import { useTodo } from "./components/contexts/ActionContext";
 import "./main.css";
 
 export default function App() {
-  const [todos, setTodos] = useState([]);
-  const handleAddTodo = (todoInput) => {
-    setTodos([...todos, todoInput]);
-  };
+  const [, { handleAddTodo }] = useTodo();
   return (
     <div className="container">
-      <Title>Title</Title>
+      <Title>Simple Kanban Board</Title>
       <Input onSubmit={handleAddTodo} />
-      <Lane todos={todos} setTodos={setTodos} />
+      <Lane />
     </div>
   );
 }

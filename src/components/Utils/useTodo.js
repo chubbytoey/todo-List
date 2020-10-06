@@ -1,18 +1,7 @@
-import React, { createContext, useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 
-const ActionContext = createContext({});
-
-export function Provider({ children }) {
+function useTodo() {
   const [todos, setTodos] = useState([]);
-  return (
-    <ActionContext.Provider value={{ todos, setTodos }}>
-      {children}
-    </ActionContext.Provider>
-  );
-}
-
-export function useTodo() {
-  const { todos, setTodos } = useContext(ActionContext);
   const handleAddTodo = (todoInput) => {
     setTodos([...todos, { id: Date.now(), content: todoInput, type: "todo" }]);
   };
@@ -20,7 +9,7 @@ export function useTodo() {
     const cloneTodo = [...todos];
     const itemIndex = cloneTodo.findIndex((todo) => todo.id === itemID);
     if (cloneTodo[itemIndex]) {
-      cloneTodo[itemIndex].type = "todo";
+      cloneTodo[itemIndex].type = "done";
     }
     setTodos(cloneTodo);
   };
@@ -56,20 +45,17 @@ export function useTodo() {
   };
 
   useEffect(() => {
-    if (!todos.length)
-      setTodos(JSON.parse(window.localStorage.getItem("todos")) || []);
+    setTodos(JSON.parse(window.localStorage.getItem("todos")) || []);
+  }, [setTodos]);
+
+  useEffect(() => {
     if (todos.length)
       window.localStorage.setItem("todos", JSON.stringify(todos));
   }, [setTodos, todos]);
 
   return [
-    {
-      todos: todos.filter((todo) => todo.type === "todo"),
-      doing: todos.filter((todo) => todo.type === "doing"),
-      done: todos.filter((todo) => todo.type === "done")
-    },
+    todos,
     { handleAddTodo, handleTodoClick, handleDoClick, handleDoneClick }
   ];
 }
-
-export default ActionContext;
+export default useTodo;
